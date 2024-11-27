@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.models import User
-from users.permissions import IsOwnerOrSuperUser
+from users.permissions import IsSuperuser, IsOwner
 from users.serializers import MyTokenObtainPairSerializer, UserSerializer
 
 
@@ -24,8 +24,32 @@ class UserCreateAPIView(generics.CreateAPIView):
         user.save()
 
 
+class UserListAPIView(generics.ListAPIView):
+    """Эндпоинт получения списка пользователей"""
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated, IsSuperuser)
+
+
+class UserDetailAPIView(generics.RetrieveAPIView):
+    """Эндпоинт получения информации о пользователе"""
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated, IsOwner | IsSuperuser)
+
+
+class UserUpdateAPIView(generics.UpdateAPIView):
+    """Эндпоинт изменения информации о пользователе"""
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated, IsOwner)
+
+    def perform_update(self, serializer):
+        serializer.save()
+
+
 class UserDelete(generics.DestroyAPIView):
     """Эндпоинт удаления пользователя"""
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsOwnerOrSuperUser,)
+    permission_classes = (IsAuthenticated, IsOwner)

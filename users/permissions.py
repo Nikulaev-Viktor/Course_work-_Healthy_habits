@@ -1,9 +1,19 @@
-from rest_framework import permissions
+from rest_framework.permissions import BasePermission
+
+from users.models import User
 
 
-class IsOwnerOrSuperUser(permissions.BasePermission):
-    """Проверка на владельца или суперпользователя"""
+class IsOwner(BasePermission):
+    """Разрешение: доступ только для владельца объекта."""
 
     def has_object_permission(self, request, view, obj):
-        return request.user == obj or request.user.is_superuser
+        if isinstance(obj, User):
+            return obj == request.user
+
+
+class IsSuperuser(BasePermission):
+    """Разрешение: доступ только для суперпользователя."""
+
+    def has_permission(self, request, view):
+        return request.user.is_superuser
 

@@ -5,7 +5,8 @@ from habits.validators import RewardAndRelatedHabitValidator, DurationValidator,
     PleasantHabitValidator, FrequencyValidator
 
 
-class HabitsSerializer(serializers.ModelSerializer):
+class HabitSerializer(serializers.ModelSerializer):
+    """Сериализатор привычек."""
     class Meta:
         model = Habits
         fields = '__all__'
@@ -20,6 +21,7 @@ class HabitsSerializer(serializers.ModelSerializer):
 
 
 class HabitPublicSerializer(serializers.ModelSerializer):
+    """Сериализатор публичных привычек."""
     class Meta:
         model = Habits
         fields = '__all__'
