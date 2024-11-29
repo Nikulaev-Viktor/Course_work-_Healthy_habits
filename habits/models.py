@@ -1,5 +1,5 @@
 from datetime import timedelta
-
+from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.db import models
 
@@ -14,6 +14,7 @@ class Habits(models.Model):
     place = models.CharField(max_length=100, verbose_name='место',
                              help_text='место, в котором выполняется привычка', **NULLABLE)
     time = models.TimeField(verbose_name='время', help_text='время, когда выполняется привычка')
+
     action = models.CharField(max_length=100, verbose_name='действие',
                               help_text='действие, которое выполняется')
     is_pleasant = models.BooleanField(default=False, verbose_name='приятная привычка')
@@ -33,4 +34,32 @@ class Habits(models.Model):
         verbose_name = 'привычка'
         verbose_name_plural = 'привычки'
 
+    def clean(self):
 
+        # Проверка RewardAndRelatedHabitValidator
+        if self.reward and self.related_habit:
+            raise ValidationError(
+                'Нельзя указывать одновременно вознаграждение и связанную привычку. Выберите что-то одно.')
+
+        # Проверка DurationValidator
+        max_duration = timedelta(seconds=120)
+        if self.complete_time and self.complete_time > max_duration:
+            raise ValidationError(
+                f"Время выполнения привычки не должно превышать {max_duration.total_seconds()} секунд.")
+
+        # Проверка RelatedHabitValidator
+        if self.related_habit and not self.related_habit.is_pleasant:
+            raise ValidationError('Связанная привычка должна быть приятной.')
+
+        # Проверка PleasantHabitValidator
+        if self.is_pleasant:
+            if self.reward:
+                raise ValidationError('У приятной привычки не может быть вознаграждения.')
+            if self.related_habit:
+                raise ValidationError('У приятной привычки не может быть связанной привычки.')
+
+        # Проверка FrequencyValidator
+        if self.frequency and self.frequency > 7:
+            raise ValidationError('Нельзя выполнять привычку реже, чем 1 раз в 7 дней.')
+
+        super().clean()

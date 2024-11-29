@@ -12,4 +12,3 @@ class Command(BaseCommand):
         user.is_superuser = True
         user.is_active = True
         user.save()
-

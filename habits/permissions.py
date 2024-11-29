@@ -8,5 +8,3 @@ class IsOwner(permissions.BasePermission):
             return True
         else:
             return False
-
-

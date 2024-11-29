@@ -9,5 +9,5 @@ class HabitsAdmin(admin.ModelAdmin):
         'id', 'place', 'time', 'action', 'is_pleasant', 'related_habit', 'frequency',
         'reward',
         'complete_time', 'is_public')
-    list_filter = ('is_public',)
-    search_fields = ('id', 'action',)
+    list_filter = ('is_pleasant', 'is_public', 'frequency')
+    search_fields = ('id', 'action', 'place')

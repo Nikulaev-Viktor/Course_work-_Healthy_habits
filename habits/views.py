@@ -59,6 +59,6 @@ class HabitsPublicListAPIView(generics.ListAPIView):
     pagination_class = HabitPagination
 
     def get_queryset(self):
+        """Возвращает только публичные привычки"""
         queryset = super().get_queryset()
         return queryset.filter(is_public=True)
-
